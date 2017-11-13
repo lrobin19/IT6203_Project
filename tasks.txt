@@ -1,0 +1,18 @@
+Authentication 
+After logging in, a registered user should be able to:
+a.  Modify their profiles.
+b.  Transfer tasks assigned to them to other users who offer the same service;
+c.  Mark completed tasks as completed and remove them from the list (task requester should receive notification email that task is completed);
+d.  A page to create new task requesting service from other users. The New Task pageshould include at least the following information: 
+	 i. KSU NetID of the requesting user;
+     ii.  Service requested; 
+     iii.  Task description; 
+     iv.  Task deadline;
+     v.  The user who are selected/assigned to complete the task.
+e.  A page to display user information and all tasks assigned to the user; 
+f.  When a new task is assigned to a user, that user is notified via email.
+Main page with:
+a.  Login form
+b.  Description of your site
+c.  Names of the site administrators (team members) 
+d.  Menu 
