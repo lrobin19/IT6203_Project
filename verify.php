@@ -34,7 +34,7 @@
 	  </div>
 	  <br><br>
 	  <center>
-	  <h2><p class="ex1">You tried to access a secure page. You can only see this if you login. Please login <a href='index.html'>here</a>.<br><br>
+	  <h2><p class="ex1">You tried to access a secure page. You can only see this if you login. Please login <a href='index.php'>here</a>.<br><br>
 </p></h2>
 </center>
 <br><br>

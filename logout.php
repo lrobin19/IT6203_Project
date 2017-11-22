@@ -29,6 +29,6 @@
       $_SESSION = array();
       session_destroy();
 	  ?>
-	  <center><h1>You have been logged out of Task List. Click <a href="index.html">here</a> to log back in</h1></center>
+	  <center><h1>You have been logged out of Task List. Click <a href="index.php">here</a> to log back in</h1></center>
   </body>
 </html>

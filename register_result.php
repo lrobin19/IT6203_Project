@@ -26,6 +26,11 @@ session_start();
 		  <li class="">
 			<a href="index.php" title="register"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Home</span></a>
 			<a href="register.php" title="register"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Register</span></a>
+						<?php
+			if (isset ($_SESSION["pupdate"]) && $_SESSION["pupdate"]){
+				echo '<a href="logout.php" title="register"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Logout</span></a>';
+			}
+			?>
 		  </li>
 		</ul>
 	  </nav>
@@ -131,17 +136,18 @@ session_start();
 		  mysqli_stmt_store_result($query3);
 	      mysqli_close($conn);
 		  // use OpenDJ version V3 protocol
-		  /*
 		  if (!ldap_set_option($ldapconn,LDAP_OPT_PROTOCOL_VERSION,3)){
 			$_SESSION["errmsg"] &="<p>Failed to set version to protocol 3</p>";
 			echo "<p>Failed to set version to protocol 3</p>";
 		  }
 		  // credentials to verify
 		  $ldaprdn = "cn=manager,dc=designstudio1,dc=com";
+		  $ldapupd = "cn=".$_SESSION["uname"].",dc=designstudio1,dc=com";
 		  $ldappass = "my*password"; // associated password
 		  // binding to ldap server
 		  $ldapbind = @ldap_bind($ldapconn, $ldaprdn, $ldappass);
           // verify binding
+		  
 		  if ($ldapbind) {
 			$ldaprecord['givenName'] = $fname;
 			$ldaprecord['sn'] = $lname;
@@ -151,12 +157,13 @@ session_start();
 			$ldaprecord['objectclass'][2] = "inetOrgPerson";
 			$ldaprecord['userPassword'] = $password;
 			$ldaprecord['mail'] = $email;
-			ldap_add($ldapconn, "cn=" . $uname . ",dc=designstudio1,dc=com", $ldaprecord);
+			ldap_mod_replace($ldapconn, $ldapupd, $ldaprecord);
 			//close ldap connection VERY IMPORTANT
 			ldap_close($ldapconn);
 		  } else {
-			echo "LDAP bind unsuccessful.";
-		  }*/
+			  echo ldap_error($ldapconn);
+			//echo "LDAP bind unsuccessful.";
+		  }
 		}
 		if($_POST['sendemail'] == 'yes'){
 		  echo "<p>Email Confirmation: Yes </p>";
