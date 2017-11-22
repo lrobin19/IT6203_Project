@@ -118,12 +118,23 @@ $_SESSION["errmsg"]="";
 	</header>
 	<aside id="left-panel">
 	  <div class="login-info">
+	  <?php
+			if (isset($_GET["update"])){
+				echo '<span>"Welcome," . $_SESSION["fullname"]</span';
+			}
+			?>		  
+		</span>
 	  </div>
 	  <nav>
 		<ul>
 		  <li class="">
 			<a href="register.php" title="register"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Register</span></a>
 			<a href="search.php" title="register"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Search</span></a>
+			<?php
+			if (isset($_GET["update"])){
+				echo '<a href="logout.php" title="register"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Logout</span></a>';
+			}
+			?>
 		  </li>
 		</ul>
 	  </nav>
@@ -136,6 +147,11 @@ $_SESSION["errmsg"]="";
 		</ol>
 	  </div>
 	  <br><br>
+	  <?php
+	  if (isset($_GET["update"])){
+		$_SESSION["pupdate"]='true';
+	  }
+	  ?>
 	  <div class="center">
 	  <h1><b><u>Register your Services</u></b></h1>
 	  <br><br>
@@ -146,23 +162,33 @@ $_SESSION["errmsg"]="";
 			?>
 		</div>
 	    <div align='left'><label class="flabel"> KSU NetID</label></div>
-		<input type="text" id="ksuid" name="ksuid"/><br><br>
+		<input type="text" id="ksuid" name="ksuid" <?php if (isset($_SESSION["ksuid"])){
+			echo "value='".$_SESSION["ksuid"]."'";
+			}?>/><br><br>
 		<em id="netid_err"></em>
 		<br>
 		<div align='left'><label class="flabel">First Name</label></div>
-		<input calss="text" type="text" id="fname" name="fname" maxlength='32'><br><br>
+		<input calss="text" type="text" id="fname" name="fname" maxlength='32'<?php if (isset($_SESSION["fname"])){
+			echo "value='".$_SESSION["fname"]."'";
+			}?>/><br><br>
 	    <em id="fname_err"></em>
 		<br>
 		<div align='left'><label class="flabel">Last Name</label></div>
-		<input type="text" id="lname" name="lname" maxlength='32'><br><br>
+		<input type="text" id="lname" name="lname" maxlength='32' <?php if (isset($_SESSION["lname"])){
+			echo "value='".$_SESSION["lname"]."'";
+			}?>/><br><br>
 	    <em id="lname_err"></em>
 		<br>
 		<div align='left'><label class="flabel"> Email Address</label></div>
-		<input type="email" id="email" name="email" maxlength='48'><br><br>
+		<input type="email" id="email" name="email" maxlength='48'<?php if (isset($_SESSION["email"])){
+			echo "value='".$_SESSION["email"]."'";
+			}?>/><br><br>
 	    <em id="email_err"></em>
 		<br>
 		<div align='left'><label class="flabel">Username</label></div>
-		<input type="text" id="uname" name="uname" maxlength='16'><br><br>
+		<input type="text" id="uname" name="uname" maxlength='16'<?php if (isset($_SESSION["uname"])){
+			echo "value='".$_SESSION["uname"]."'";
+			}?>/><br><br>
 	    <em id="uname_err"></em>
 		<br>
 		<div align='left'><label class="flabel">Enter password</label></div>

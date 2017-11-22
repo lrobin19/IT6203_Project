@@ -24,7 +24,7 @@ session_start();
 	  <nav>
 		<ul>
 		  <li class="">
-			<a href="index.html" title="register"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Home</span></a>
+			<a href="index.php" title="register"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Home</span></a>
 			<a href="register.php" title="register"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Register</span></a>
 		  </li>
 		</ul>
@@ -51,29 +51,18 @@ session_start();
 	  $to = $email;
 	  $subject = "Registration";
 	  $notification = $_POST['sendemail'];
-	  $timestamp = date("Y-m-d H:i:s");
-	  if($_POST['sendemail'] == 'yes'){
-		echo "<p>Email Confirmation: Yes </p>";
-	    if (mail($to, $subject, $body)) {
-		  echo("<p>Confirmation email message successfully sent!</p>");
-	    } else {
-		  echo("<p>Confirmation email message delivery failed...</p>");
-		}
-	    }else {
-		  echo "<p>Email Confirmation: No </p>";
+	  if ($notification=='no'){
+		$notification=0;
+	  }else{
+		$notification=1;
 	  }
-	  $msg = $msg . "Your registration has been received.<br>";
-	  $msg = $msg . "<b>First name:</b> " . $fname . "<br>";
-	  $msg = $msg . "<b>Last name:</b> " . $lname . "<br>";
-	  $msg = $msg . "<b>Email:</b> " . $email . "<br>";
-  	  $msg = $msg . "<b>Username:</b> " . $uname . "<br>";
-	  echo $msg;
+	  $timestamp = date("Y-m-d H:i:s");
 	  //Insert registration/profile information into database
 	  //Connect to database
 	  $conn = new mysqli("localhost", "proj_user", "my*password", "lrobinson");
 	  // connect to ldap server
 	  $ldapconn = ldap_connect("localhost") or die("Could not connect to LDAP server.");
-	  //Test bother database and ldap connections
+	  //Test both database and ldap connections
 	  if (! $ldapconn || mysqli_connect_errno($conn)){
 		if (! $ldapconn){
 		  $_SESSION["errmsg"]&="Could not connect to LDAP server.";
@@ -84,37 +73,107 @@ session_start();
 		}
 		//If both connections verified, insert information into database and ldap
 	  }else{
-		$query1 = mysqli_prepare($conn, "insert into profile (ksuid, first_name, last_name, email, post_date, notification, username) values(?,?,?,?,?,?,?);");
-		mysqli_stmt_bind_param ($query1, "issssis", $ksuid, $fname,$lname,$email, $timestamp, $notification, $uname);
-		mysqli_stmt_execute($query1);
-		mysqli_stmt_store_result($query1);
-	    mysqli_close($conn);
-		// use OpenDJ version V3 protocol
-		if (!ldap_set_option($ldapconn,LDAP_OPT_PROTOCOL_VERSION,3)){
-		  $_SESSION["errmsg"] &="<p>Failed to set version to protocol 3</p>";
-		  echo "<p>Failed to set version to protocol 3</p>";
-		}
-		// credentials to verify
-		$ldaprdn = "cn=manager,dc=designstudio1,dc=com";
-		$ldappass = "my*password"; // associated password
-		// binding to ldap server
-		$ldapbind = @ldap_bind($ldapconn, $ldaprdn, $ldappass);
-        // verify binding
-		if ($ldapbind) {
-		  $ldaprecord['givenName'] = $fname;
-		  $ldaprecord['sn'] = $lname;
-		  $ldaprecord['cn'] = $uname;
-		  $ldaprecord['objectclass'][0] = "top";
-		  $ldaprecord['objectclass'][1] = "person";
-		  $ldaprecord['objectclass'][2] = "inetOrgPerson";
-		  $ldaprecord['userPassword'] = $password;
-		  $ldaprecord['mail'] = $email;
-		  ldap_add($ldapconn, "cn=" . $uname . ",dc=designstudio1,dc=com", $ldaprecord);
-		  //close ldap connection VERY IMPORTANT
-		  ldap_close($ldapconn);
-		} else {
+		if (!isset($_SESSION["pupdate"])){
+		  $query1 = mysqli_prepare($conn, "insert into profile (ksuid, first_name, last_name, email, post_date, notification, username) values(?,?,?,?,?,?,?);");
+		  mysqli_stmt_bind_param ($query1, "issssis", $ksuid, $fname,$lname,$email, $timestamp, $notification, $uname);
+		  mysqli_stmt_execute($query1);
+		  mysqli_stmt_store_result($query1);
+	      mysqli_close($conn);
+		  // use OpenDJ version V3 protocol
+		  if (!ldap_set_option($ldapconn,LDAP_OPT_PROTOCOL_VERSION,3)){
+			$_SESSION["errmsg"] &="<p>Failed to set version to protocol 3</p>";
+			echo "<p>Failed to set version to protocol 3</p>";
+		  }
+		  // credentials to verify
+		  $ldaprdn = "cn=manager,dc=designstudio1,dc=com";
+		  $ldappass = "my*password"; // associated password
+		  // binding to ldap server
+		  $ldapbind = @ldap_bind($ldapconn, $ldaprdn, $ldappass);
+          // verify binding
+		  if ($ldapbind) {
+			$ldaprecord['givenName'] = $fname;
+			$ldaprecord['sn'] = $lname;
+			$ldaprecord['cn'] = $uname;
+			$ldaprecord['objectclass'][0] = "top";
+			$ldaprecord['objectclass'][1] = "person";
+			$ldaprecord['objectclass'][2] = "inetOrgPerson";
+			$ldaprecord['userPassword'] = $password;
+			$ldaprecord['mail'] = $email;
+			ldap_add($ldapconn, "cn=" . $uname . ",dc=designstudio1,dc=com", $ldaprecord);
+			//close ldap connection VERY IMPORTANT
+			ldap_close($ldapconn);
+		  } else {
 			echo "LDAP bind unsuccessful.";
-	  }
+		  }
+		  if($_POST['sendemail'] == 'yes'){
+			echo "<p>Email Confirmation: Yes </p>";
+			if (mail($to, $subject, $msg)) {
+		      echo("<p>Confirmation email message successfully sent!</p>");
+			} else {
+			  echo("<p>Confirmation email message delivery failed...</p>");
+			}
+		  }else {
+			echo "<p>Email Confirmation: No </p>";
+		  }
+		  $msg = $msg . "Your registration has been received.<br>";
+		  $msg = $msg . "<b>First name:</b> " . $fname . "<br>";
+		  $msg = $msg . "<b>Last name:</b> " . $lname . "<br>";
+	 	  $msg = $msg . "<b>Email:</b> " . $email . "<br>";
+		  $msg = $msg . "<b>Username:</b> " . $uname . "<br>";
+		  echo $msg;
+		}elseif (isset ($_SESSION["pupdate"]) && $_SESSION["pupdate"]){
+		  $query3 = mysqli_prepare($conn, "update profile set ksuid=?, first_name=?, last_name=?, email=?, post_date=?, notification=?, username=? where id=?");
+		  if ( !$query3 ) {
+			die('mysqli error: '.mysqli_error($conn));
+		  }
+		  mysqli_stmt_bind_param ($query3, "issssisi", $ksuid, $fname,$lname,$email, $timestamp, $notification, $uname, $_SESSION["uid"]);
+		  mysqli_stmt_execute($query3);
+		  mysqli_stmt_store_result($query3);
+	      mysqli_close($conn);
+		  // use OpenDJ version V3 protocol
+		  /*
+		  if (!ldap_set_option($ldapconn,LDAP_OPT_PROTOCOL_VERSION,3)){
+			$_SESSION["errmsg"] &="<p>Failed to set version to protocol 3</p>";
+			echo "<p>Failed to set version to protocol 3</p>";
+		  }
+		  // credentials to verify
+		  $ldaprdn = "cn=manager,dc=designstudio1,dc=com";
+		  $ldappass = "my*password"; // associated password
+		  // binding to ldap server
+		  $ldapbind = @ldap_bind($ldapconn, $ldaprdn, $ldappass);
+          // verify binding
+		  if ($ldapbind) {
+			$ldaprecord['givenName'] = $fname;
+			$ldaprecord['sn'] = $lname;
+			$ldaprecord['cn'] = $uname;
+			$ldaprecord['objectclass'][0] = "top";
+			$ldaprecord['objectclass'][1] = "person";
+			$ldaprecord['objectclass'][2] = "inetOrgPerson";
+			$ldaprecord['userPassword'] = $password;
+			$ldaprecord['mail'] = $email;
+			ldap_add($ldapconn, "cn=" . $uname . ",dc=designstudio1,dc=com", $ldaprecord);
+			//close ldap connection VERY IMPORTANT
+			ldap_close($ldapconn);
+		  } else {
+			echo "LDAP bind unsuccessful.";
+		  }*/
+		}
+		if($_POST['sendemail'] == 'yes'){
+		  echo "<p>Email Confirmation: Yes </p>";
+	      if (mail($to, $subject, $msg)) {
+		    echo("<p>Confirmation email message successfully sent!</p>");
+	      } else {
+		    echo("<p>Confirmation email message delivery failed...</p>");
+		  }
+	    }else {
+		  echo "<p>Email Confirmation: No </p>";
+		}
+		$msg = $msg . "Your profile has been updated.<br>";
+		$msg = $msg . "<b>First name:</b> " . $fname . "<br>";
+		$msg = $msg . "<b>Last name:</b> " . $lname . "<br>";
+		$msg = $msg . "<b>Email:</b> " . $email . "<br>";
+		$msg = $msg . "<b>Username:</b> " . $uname . "<br>";
+		echo $msg;
 	  }
 	} else {
 	  if (empty($_POST["ksuid"])){

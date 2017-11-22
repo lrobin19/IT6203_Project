@@ -48,10 +48,13 @@ session_start();
 		if (mysqli_connect_errno($conn)){
 		  echo 'Cannot connect to database: ' . mysqli_connect_error();
 		}else{
-		  $query1 = mysqli_prepare($conn, "Select ksuid, email from profile where username=?;");
+		  $query1 = mysqli_prepare($conn, "Select id, ksuid, first_name, last_name, username, email from profile p where username=?");
 		  mysqli_stmt_bind_param ($query1, "s", $_SESSION["username"]);
 		  mysqli_stmt_execute($query1);
 		  mysqli_stmt_store_result($query1);
+		  mysqli_stmt_bind_result($query1, $_SESSION["uid"], $ksuid, $_SESSION["fname"], $_SESSION["lname"], $_SESSION["uname"], $_SESSION["email"]);
+		  mysqli_stmt_fetch($query1);
+		  $_SESSION["ksuid"]=str_pad($ksuid, 9, '0', STR_PAD_LEFT);
 		}
 		mysqli_close($conn);
       } else {
