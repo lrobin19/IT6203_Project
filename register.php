@@ -120,7 +120,7 @@ $_SESSION["errmsg"]="";
 	  <div class="login-info">
 	  <?php
 			if (isset($_GET["update"])){
-				echo '<span>"Welcome," . $_SESSION["fullname"]</span';
+				echo '<span>Welcome, ' . $_SESSION["fname"].'</span>';
 			}
 			?>		  
 		</span>
@@ -162,31 +162,31 @@ $_SESSION["errmsg"]="";
 			?>
 		</div>
 	    <div align='left'><label class="flabel"> KSU NetID</label></div>
-		<input type="text" id="ksuid" name="ksuid" <?php if (isset($_SESSION["ksuid"])){
+		<input type="text" id="ksuid" name="ksuid" <?php if (isset ($_SESSION["pupdate"]) && $_SESSION["pupdate"]){
 			echo "value='".$_SESSION["ksuid"]."'";
 			}?>/><br><br>
 		<em id="netid_err"></em>
 		<br>
 		<div align='left'><label class="flabel">First Name</label></div>
-		<input calss="text" type="text" id="fname" name="fname" maxlength='32'<?php if (isset($_SESSION["fname"])){
+		<input calss="text" type="text" id="fname" name="fname" maxlength='32'<?php if (isset ($_SESSION["pupdate"]) && $_SESSION["pupdate"]){
 			echo "value='".$_SESSION["fname"]."'";
 			}?>/><br><br>
 	    <em id="fname_err"></em>
 		<br>
 		<div align='left'><label class="flabel">Last Name</label></div>
-		<input type="text" id="lname" name="lname" maxlength='32' <?php if (isset($_SESSION["lname"])){
+		<input type="text" id="lname" name="lname" maxlength='32' <?php if (isset ($_SESSION["pupdate"]) && $_SESSION["pupdate"]){
 			echo "value='".$_SESSION["lname"]."'";
 			}?>/><br><br>
 	    <em id="lname_err"></em>
 		<br>
 		<div align='left'><label class="flabel"> Email Address</label></div>
-		<input type="email" id="email" name="email" maxlength='48'<?php if (isset($_SESSION["email"])){
+		<input type="email" id="email" name="email" maxlength='48'<?php if (isset ($_SESSION["pupdate"]) && $_SESSION["pupdate"]){
 			echo "value='".$_SESSION["email"]."'";
 			}?>/><br><br>
 	    <em id="email_err"></em>
 		<br>
 		<div align='left'><label class="flabel">Username</label></div>
-		<input type="text" id="uname" name="uname" maxlength='16'<?php if (isset($_SESSION["uname"])){
+		<input type="text" id="uname" name="uname" maxlength='16'<?php if (isset ($_SESSION["pupdate"]) && $_SESSION["pupdate"]){
 			echo "value='".$_SESSION["uname"]."'";
 			}?>/><br><br>
 	    <em id="uname_err"></em>
