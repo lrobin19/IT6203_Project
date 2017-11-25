@@ -80,7 +80,7 @@ session_start();
 	  }else{
 		if (!isset($_SESSION["pupdate"])){
 		  $query1 = mysqli_prepare($conn, "insert into profile (ksuid, first_name, last_name, email, post_date, notification, username) values(?,?,?,?,?,?,?);");
-		  mysqli_stmt_bind_param ($query1, "issssis", $ksuid, $fname,$lname,$email, $timestamp, $notification, $uname);
+		  mysqli_stmt_bind_param ($query1, "issssss", $ksuid, $fname,$lname,$email, $timestamp, $notification, $uname);
 		  mysqli_stmt_execute($query1);
 		  mysqli_stmt_store_result($query1);
 	      mysqli_close($conn);
