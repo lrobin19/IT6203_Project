@@ -11,7 +11,17 @@ $_SESSION["errmsg"]="";
 	<title> KSU Task List </title>
 	<link rel="stylesheet" type="text/css" media="screen" href="css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" media="screen" href="css/style.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 	<script type="text/javascript">
+	  $(document).ready(function(){
+		$('#ifhide').fadeOut('slow');
+		$('#tptype').change(function(){
+			$('#ifhide').fadeIn('slow');
+		});
+				$('#sptype').change(function(){
+			$('#ifhide').fadeOut('slow');
+		});
+	});
       //This function takes two parameters: input to validate and EM name to display error message
       function validate_number(input_name, error_div){
 		var var_input = document.getElementById(input_name);
@@ -93,18 +103,61 @@ $_SESSION["errmsg"]="";
 		  }
       }
 	  
+	  function validate_radio(input_name, error_div) { 
+		var radiov='';
+	    var var_error_div = document.getElementById(error_div);
+		var elements = document.getElementsByName("ptype");
+		for (i = 0; i < elements.length; i++)
+		  {
+			if (elements[i].checked){
+			  var radiov = elements[i].value;
+			}
+		  }
+		if (radiov == ''){
+		  var_error_div.innerHTML ="Please select your profile type.";
+		  return false;
+		}else{
+		  var_error_div.innerHTML ="";
+		  return radiov;
+		}
+	  }
+	  
+	  function validate_checkbox(groupname, error_div) { 
+	    var var_error_div = document.getElementById(error_div);
+	    var checkboxes = document.querySelectorAll("input[name='"+groupname+"']");
+		var checkedOne = Array.prototype.slice.call(checkboxes).some(x => x.checked);
+		if (checkedOne){
+		  var_error_div.innerHTML ="";
+		}else{
+		  var_error_div.innerHTML ="Please select at least one.";
+		}
+		return checkedOne;
+	  }
+	  
 	  function validate_form(){
+		var ptype = document.getElementById(ptype);
 	    var ksuid = validate_number('ksuid','netid_err');
 	    var fname = validate_string('fname','fname_err');
 	    var lname = validate_string('lname','lname_err');
 	    var email = validate_string('email','email_err');
 		var pwd = validate_pw('pword1', 'pword2','pwd_err');
-	    if (ksuid && fname && lname && email && pwd){
-		  return true;
+		var ptype = validate_radio('ptype', 'ptype_err');
+		if (ptype == 'tutor'){
+		  var service = validate_checkbox('service[]', 'serv_err');
+		  var shift = validate_checkbox('shift[]', 'shift_err');
+	      if (service &&shift && ksuid && fname && lname && email && pwd){
+			return true;
+		  }else{
+			return false;
+	      }
 		}else{
-		  return false;
-	    }
-	  } 
+		  if (ksuid && fname && lname && email && pwd){
+			return true;
+		  }else{
+			return false;
+	      }
+		} 
+	  }
 
     </script>
   </head>
@@ -128,10 +181,12 @@ $_SESSION["errmsg"]="";
 	  <nav>
 		<ul>
 		  <li class="">
-			<a href="register.php" title="register"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Register</span></a>
 			<a href="search.php" title="register"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Search</span></a>
 			<?php
-			if (isset($_GET["update"])){
+			if (!isset ($_SESSION["uid"])){
+				echo '<a href="register.php" title="register"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Register</span></a>';
+			}
+			if (isset ($_SESSION["pupdate"]) && $_SESSION["pupdate"]){
 				echo '<a href="logout.php" title="register"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Logout</span></a>';
 			}
 			?>
@@ -168,27 +223,26 @@ $_SESSION["errmsg"]="";
 		<em id="netid_err"></em>
 		<br>
 		<div align='left'><label class="flabel">First Name</label></div>
-		<input calss="text" type="text" id="fname" name="fname" maxlength='32'<?php if (isset ($_SESSION["pupdate"]) && $_SESSION["pupdate"]){
-			echo "value='".$_SESSION["fname"]."'";
-			}?>/><br><br>
+		<input calss="text" type="text" id="fname" name="fname" maxlength='32'<?php if (isset ($_SESSION["pupdate"]) && $_SESSION["pupdate"]){echo "value='".$_SESSION["fname"]."'";}?>/>
+			<br><br>
 	    <em id="fname_err"></em>
 		<br>
 		<div align='left'><label class="flabel">Last Name</label></div>
 		<input type="text" id="lname" name="lname" maxlength='32' <?php if (isset ($_SESSION["pupdate"]) && $_SESSION["pupdate"]){
-			echo "value='".$_SESSION["lname"]."'";
-			}?>/><br><br>
+			echo "value='".$_SESSION["lname"]."'";}?>/>
+			<br><br>
 	    <em id="lname_err"></em>
 		<br>
 		<div align='left'><label class="flabel"> Email Address</label></div>
 		<input type="email" id="email" name="email" maxlength='48'<?php if (isset ($_SESSION["pupdate"]) && $_SESSION["pupdate"]){
-			echo "value='".$_SESSION["email"]."'";
-			}?>/><br><br>
+			echo "value='".$_SESSION["email"]."'";}?>/>
+			<br><br>
 	    <em id="email_err"></em>
 		<br>
 		<div align='left'><label class="flabel">Username</label></div>
 		<input type="text" id="uname" name="uname" maxlength='16'<?php if (isset ($_SESSION["pupdate"]) && $_SESSION["pupdate"]){
-			echo "value='".$_SESSION["uname"]."'";
-			}?>/><br><br>
+			echo "value='".$_SESSION["uname"]."'";}?>/>
+			<br><br>
 	    <em id="uname_err"></em>
 		<br>
 		<div align='left'><label class="flabel">Enter password</label></div>
@@ -199,7 +253,88 @@ $_SESSION["errmsg"]="";
 		<div align='left'><label class="flabel">Re-enter Password</label></div>
 		<input type="password" id="pword2" name="pword2" maxlength='16' required><br><br>
 	    <em id="pwd_err"></em>
-		<br>
+		<br><br>
+		<div align='left'><label class="flabel">Add Additional Service?</label></div>
+	  <input type="text" id="addserv" name="addserv" maxlength='16'/>
+	  <br><br>
+	  <div align='left'><label class="flabel">I am a:</label></div>
+		<div align='left'><input type="radio" id="sptype" value="student" name="ptype" <?php if (isset ($_SESSION["pupdate"]) && $_SESSION["pupdate"] && $_SESSION["ptype"] == "student"){echo "checked";}?>>Student</div>
+		<div align='left'><input type="radio" id="tptype" value="tutor" name="ptype" <?php if (isset ($_SESSION["pupdate"]) && $_SESSION["pupdate"] && $_SESSION["ptype"] == "tutor"){echo "checked";}?>>Tutor</div>
+		<br><br>
+	    <em id="ptype_err"></em>
+		<br><br>
+		<div class='ifhide' id='ifhide'>
+		  <h2>Services Offered</h2> 
+	  <?php 
+		$conn = new mysqli("localhost", "proj_user", "my*password", "lrobinson");
+		if (mysqli_connect_errno($conn)){
+          echo 'Cannot connect to database: ' . mysqli_connect_error();
+		}else{
+		  $query = mysqli_prepare($conn, "select * from services;");
+		  mysqli_stmt_execute($query);
+		  mysqli_stmt_store_result($query);
+		  if( mysqli_stmt_num_rows($query) == 0){
+             echo "No entries found";
+          }else{
+            mysqli_stmt_bind_result($query, $servID, $description, $shortdesc);
+            while (mysqli_stmt_fetch($query)) {
+			  ?>
+			  <input type="checkbox" name="service[]" value="<?php echo $shortdesc;?>" id="<?php echo $shortdesc;?>" /><?php echo $description;?><br>
+		      <?php
+			}
+		    mysqli_close($conn);
+		  }
+		}
+   ?>
+	  <br><br>
+	  <em id="serv_err"></em><br>
+		  <h1>Availability</h1>
+		  <table class="center">
+			<tr>
+			  <th>Shift</th>
+			  <th>M</th>
+			  <th>T</th>
+			  <th>W</th>
+			  <th>R</th>
+			  <th>F</th>
+			  <th>Sa</th>
+			  <th>Su</th>
+			</tr>
+			<tr>
+			  <td>Morning (8am-12pm)</td>
+			  <td><input type="checkbox" name='shift[]' id="monmorn" value="monmorn"></td>
+			  <td><input type="checkbox" name='shift[]' id="tuesmorn" value="tuesmorn"></td>
+			  <td><input type="checkbox" name='shift[]' id="wedmorn" value="wedmorn"></td>
+			  <td><input type="checkbox" name='shift[]' id="thursmorn" value="thursmorn"></td>
+			  <td><input type="checkbox" name='shift[]' id="frimorn" value="frimorn"></td>
+			  <td><input type="checkbox" name='shift[]' id="satmorn" value="satmorn"></td>
+			  <td><input type="checkbox" name='shift[]' id="sunmorn" value="sunmorn"></td>
+			</tr>
+			<tr>
+			  <td> Afternoon (12pm-4pm)</td>
+			  <td><input type="checkbox" name='shift[]' id="monaft" value="monaft"></td>
+			  <td><input type="checkbox" name='shift[]' id="tuesaft" value="tuesaft"></td>
+			  <td><input type="checkbox" name='shift[]' id="wedaft" value="wedaft"></td>
+			  <td><input type="checkbox" name='shift[]' id="thursaft" value="thursaft"></td>
+			  <td><input type="checkbox" name='shift[]' id="friaft" value="friaft"></td>
+			  <td><input type="checkbox" name='shift[]' id="sataft" value="sataft"></td>
+			  <td><input type="checkbox" name='shift[]' id="sunaft" value="sunaft"></td>
+			</tr>
+			<tr>
+			  <td>Evening (4pm-8pm)</td>
+			  <td><input type="checkbox" name='shift[]' id="moneve" value="moneve"></td>
+			  <td><input type="checkbox" name='shift[]' id="tueseve" value="tueseve"></td>
+			  <td><input type="checkbox" name='shift[]' id="wedeve" value="wedeve"></td>
+			  <td><input type="checkbox" name='shift[]' id="thurseve" value="thurseve"></td>
+			  <td><input type="checkbox" name='shift[]' id="frieve" value="frieve"></td>
+			  <td><input type="checkbox" name='shift[]' id="sateve" value="sateve"></td>
+			  <td><input type="checkbox" name='shift[]' id="suneve" value="suneve"></td>
+			</tr>
+		  </table>
+		  <br>
+		  <em id="shift_err"></em>
+		</div>
+	  <br>
 		<div align='left'><label class="flabel">Send email confirmation</label></div>
 		<input type='hidden' value='no' name='sendemail'>
 		<div align='left'><input type="checkbox" id="sendemail" value="yes" name="sendemail"></div>

@@ -38,21 +38,19 @@ session_start();
 		$attrs = ldap_get_attributes($ldapconn, $entry);
 		echo "<br>Attrs " . var_dump($attrs);
 		$_SESSION["fullname"]=$attrs["sn"][0];
-		//$_SESSION["email"]=$attrs["mail"][0];
 		$_SESSION["authenticated"] = 1;
 		$_SESSION["username"] = $username;
-		//echo $_SESSION["fullname"].','. $_SESSION["email"] .','. $_SESSION["authenticated"] = 1 .','. $_SESSION["username"];
-		header("Location: search.php");
+		header("Location: home.php");
 		ldap_close($ldapconn);
 		$conn = new mysqli("localhost", "proj_user", "my*password", "lrobinson");
 		if (mysqli_connect_errno($conn)){
 		  echo 'Cannot connect to database: ' . mysqli_connect_error();
 		}else{
-		  $query1 = mysqli_prepare($conn, "Select id, ksuid, first_name, last_name, username, email from profile p where username=?");
+		  $query1 = mysqli_prepare($conn, "Select id, ksuid, first_name, last_name, username, email, type from profile p where username=?");
 		  mysqli_stmt_bind_param ($query1, "s", $_SESSION["username"]);
 		  mysqli_stmt_execute($query1);
 		  mysqli_stmt_store_result($query1);
-		  mysqli_stmt_bind_result($query1, $_SESSION["uid"], $ksuid, $_SESSION["fname"], $_SESSION["lname"], $_SESSION["uname"], $_SESSION["email"]);
+		  mysqli_stmt_bind_result($query1, $_SESSION["uid"], $ksuid, $_SESSION["fname"], $_SESSION["lname"], $_SESSION["uname"], $_SESSION["email"], $_SESSION["ptype"]);
 		  mysqli_stmt_fetch($query1);
 		  $_SESSION["ksuid"]=str_pad($ksuid, 9, '0', STR_PAD_LEFT);
 		}

@@ -14,7 +14,7 @@ die();
 	<link rel="stylesheet" type="text/css" media="screen" href="css/style.css">
 	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
   
   <script>
   $(document).ready(function() {
@@ -156,7 +156,7 @@ die();
 		  <select id="user" name="user">
 		<?php 
 			$conn = new mysqli("localhost", "proj_user", "my*password", "lrobinson");
-			$sql = mysqli_query($conn, "SELECT first_name FROM profile");
+			$sql = mysqli_query($conn, "SELECT first_name FROM profile where type='tutor'");
 				while ($row = $sql->fetch_assoc()){
 				echo "<option value='".$row['first_name']."'>" . $row['first_name'] . "</option>";
 			}
