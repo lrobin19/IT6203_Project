@@ -31,6 +31,7 @@ session_start();
 				$_SESSION['pmenu']='tutor';
 			  }else{
 				$_SESSION['pmenu']='student';
+			  }
 			  }else{
 			  $_SESSION['pmenu']='unauth';
 			}
@@ -135,7 +136,7 @@ session_start();
 		}
 		if ($ptype == 'tutor'){
 		  $query3 = mysqli_prepare($conn, "update profile set availability=? where username=?;");
-		  mysqli_stmt_bind_param ($query3, "ss", $shift, $_SESSION["username"]);
+		  mysqli_stmt_bind_param ($query3, "ss", $shift, $uname);
 		  mysqli_stmt_execute($query3);
 		  mysqli_stmt_store_result($query3);
 		  $servshort = explode(',', $service);

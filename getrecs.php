@@ -1,4 +1,5 @@
 <?php
+$theshift='';
 $conn = new mysqli("localhost", "proj_user", "my*password", "lrobinson");
  $desc = $_REQUEST['action'];
  

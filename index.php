@@ -96,5 +96,8 @@ $_SESSION["errmsg"]="";
 </p></h2>
 </center>
 <br><br>
+<div class="footer">
+  <p>Group 3: Leo Iacono, Lauren Robinson, Roy Sosby, Holbert White</p>
+</div>
 </body>
 </html>

@@ -5,7 +5,7 @@ if (isset($_SESSION['pmenu'])){
 			<a href="register.php?update=true" title="register"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Update Profile</span></a>
 			<a href="logout.php" title="logout"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Logout</span></a>';
   }else	if($_SESSION['pmenu'] == 'student'){
-	  echo '<a href="search.php" title="search"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Search</span></a>
+	  echo '<a href="student.php" title="search"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Search</span></a>
 		<a href="register.php?update=true" title="register"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Update Profile</span></a>
 			<a href="logout.php" title="logout"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Logout</span></a>';
   }else{
