@@ -1,6 +1,9 @@
 <?php
 session_start();
-$_SESSION["errmsg"]='';
+if (!isset($_SESSION['authenticated']) OR !$_SESSION['authenticated'] == 1) {
+    header("Location: verify.php");
+die();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en-us">

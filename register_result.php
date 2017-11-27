@@ -31,9 +31,9 @@ session_start();
 				$_SESSION['pmenu']='tutor';
 			  }else{
 				$_SESSION['pmenu']='student';
-			  }
+			  }else{
+			  $_SESSION['pmenu']='unauth';
 			}
-			  $_SESSION['pmenu']='student';
 			  include "aside.php"; 
 			?>
 		  </li>

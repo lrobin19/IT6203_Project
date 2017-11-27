@@ -12,6 +12,30 @@ die();
 	<title> KSU Task List </title>
 	<link rel="stylesheet" type="text/css" media="screen" href="css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" media="screen" href="css/style.css">
+	<link rel="stylesheet" href="bootstrap/css/bootstrap.min.css" type="text/css" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function()
+{  
+ $("#serv").change(function()
+ {    
+  var id = $(this).find(":selected").val();
+  var dataString = 'action='+ id;
+  $.ajax
+  ({
+   url: 'getrecs.php',
+   data: dataString,
+   cache: false,
+   success: function(r)
+   {
+    $("#display").html(r);
+   } 
+  });
+ })
+ // code to get all records from table via select box
+});
+</script>
   </head>
   <body class="">
 	<header id="header">
@@ -57,7 +81,8 @@ die();
    
    <h1><b><u>Search for Services</u></b></h1>
 		<form action="student.php" method="post">
-		  		  <select id="serv" name="serv"> 
+		<select id="serv" name="serv"> 
+		<option selected="true" disabled="disabled">Select One</option>
 		<?php 
 			$conn = new mysqli("localhost", "proj_user", "my*password", "lrobinson");
 			$sql = mysqli_query($conn, "select shortdesc, description from services");
@@ -70,75 +95,9 @@ die();
 		  <input type="submit" value="Search">
 		</form>
 		<br><br><br>
-		<?php
-		if ($_SERVER['REQUEST_METHOD'] == 'POST'){
-		  $serv = $_POST['serv'];
-		  $conn = new mysqli("localhost", "proj_user", "my*password", "lrobinson");
-			if (mysqli_connect_errno($conn)){
-			  echo 'Cannot connect to database: ' . mysqli_connect_error();
-			}else{
-			  $query2 = mysqli_prepare($conn, "SELECT a.first_name, a.last_name, a.availability, c.description from profile a join servicesprovided b on a.ksuid=b.userid join services c on b.servid=c.servid where c.shortdesc= ?;");
-			  mysqli_stmt_bind_param ($query2, "s", $serv);
-			  mysqli_stmt_execute($query2);
-			  mysqli_stmt_store_result($query2);
-			  mysqli_stmt_bind_result($query2, $fname, $lname, $avail, $desc);
-			}
-			$i=0;
-			while (mysqli_stmt_fetch($query2)) {
-			  $resarr[$i][0] = $fname . " " . $lname;
-			  $resarr[$i][1] = $avail;
-			  $resarr[$i][2] = $serv;
-			  $i+=1;
-			}
-			mysqli_close($conn);
-			if( mysqli_stmt_num_rows($query2) == 0){
-			  echo "<h2>No tutors available for this service.<h2>";
-			}else{
-				echo "<h1> Service: " . $desc ."</h1><br>";
-			?>
-		<table class="center">
-	    <tr>
-		  <th>Tutor</th>
-		  <th>Day</th>
-		  <th>Time</th>
-		</tr>
-		<?php
-		  for($x = 0; $x < count($resarr); $x++) {  
-		  $availarr = explode(",", $avail);
-			for ($y = 0; $y < count($availarr); $y++){
-			  $row = "<tr><td> ".$resarr[$x][0] . "</td><td> ";
-			  if (strpos($availarr[$y], 'mon') !== false){
-				$theshift = "Monday ";
-			  } elseif (strpos($availarr[$y], 'tues') !== false){
-				$theshift = "Tuesday ";
-			  } elseif (strpos($availarr[$y], 'wed') !== false){
-				$theshift = "Wednesday ";
-			  } elseif (strpos($availarr[$y], 'thurs') !== false){
-				$theshift = "Thursday ";
-			  } elseif (strpos($availarr[$y], 'fri') !== false){
-				$theshift = "Friday ";
-			  } elseif (strpos($availarr[$y], 'sat') !== false){
-				$theshift = "Saturday ";
-			  } elseif (strpos($availarr[$y], 'sun') !== false){
-				$theshift = "Sunday ";
-			  }
-			  $row .= $theshift . "</td><td>";
-			  if (strpos($availarr[$y], 'morn') !== false){
-				$theshift = "Morning";
-			  } elseif (strpos($availarr[$y], 'aft') !== false){
-				$theshift = "Afternoon";
-			  } elseif (strpos($availarr[$y], 'eve') !== false){
-				$theshift = "Evening";
-			  }
-			  $row .= $theshift . "</td></tr>";
-			  echo $row;
-			}
-			
-		  }
-		echo "</table>";
-		}
-		}
-		?>
+    <div class="" id="display">
+       <!-- Records will be displayed here -->
+    </div>
 	  </div>
 	</div>
   </body>
