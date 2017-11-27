@@ -20,6 +20,12 @@
 	  </div>
 	  <nav>
 		<ul>
+		  <li class="">
+			<?php
+			  $_SESSION['pmenu']='unauth';
+			  include "aside.php"; 
+			?>
+		  </li>
 		</ul>
 	  </nav>
 	</aside>

@@ -181,14 +181,9 @@ $_SESSION["errmsg"]="";
 	  <nav>
 		<ul>
 		  <li class="">
-			<a href="search.php" title="register"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Search</span></a>
 			<?php
-			if (!isset ($_SESSION["uid"])){
-				echo '<a href="register.php" title="register"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Register</span></a>';
-			}
-			if (isset ($_SESSION["pupdate"]) && $_SESSION["pupdate"]){
-				echo '<a href="logout.php" title="register"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Logout</span></a>';
-			}
+			$_SESSION['pmenu']='unauth';
+			  include "aside.php"; 
 			?>
 		  </li>
 		</ul>
@@ -260,7 +255,6 @@ $_SESSION["errmsg"]="";
 	  <div align='left'><label class="flabel">I am a:</label></div>
 		<div align='left'><input type="radio" id="sptype" value="student" name="ptype" <?php if (isset ($_SESSION["pupdate"]) && $_SESSION["pupdate"] && $_SESSION["ptype"] == "student"){echo "checked";}?>>Student</div>
 		<div align='left'><input type="radio" id="tptype" value="tutor" name="ptype" <?php if (isset ($_SESSION["pupdate"]) && $_SESSION["pupdate"] && $_SESSION["ptype"] == "tutor"){echo "checked";}?>>Tutor</div>
-		<br><br>
 	    <em id="ptype_err"></em>
 		<br><br>
 		<div class='ifhide' id='ifhide'>

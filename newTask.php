@@ -1,9 +1,6 @@
 <?php
 session_start();
-if (!isset($_SESSION['authenticated']) OR !$_SESSION['authenticated'] == 1) {
-    header("Location: verify.php");
-die();
-}
+$_SESSION["errmsg"]='';
 ?>
 <!DOCTYPE html>
 <html lang="en-us">
@@ -124,70 +121,27 @@ die();
 	  </div>
 	  <br><br>
 	  <div class="center">
-<form action="taskcreated.php" method="post">
-	      
-		  <h1><b>KSUID</b></h1>
-		  <h3>Choose the KSUID of the requesting user</h3>
-		  <select id="ksu" name="ksu"> 
-		<?php 
-			$conn = new mysqli("localhost", "proj_user", "my*password", "lrobinson");
-			$sql = mysqli_query($conn, "SELECT ksuid FROM profile where type='student'");
-				while ($row = $sql->fetch_assoc()){
-				echo "<option value='". $row['ksuid'] ."'>" . $row['ksuid'] . "</option>";
-			}
-		?>
-		  </select>
-		  
-		  <h1><b>Select Service</b></h1>
-		  <h3>Choose the service required</h3>
-		  <select id="service" name="service"> 
-		<?php 
-			$conn = new mysqli("localhost", "proj_user", "my*password", "lrobinson");
-			$sql = mysqli_query($conn, "SELECT description FROM services");
-				while ($row = $sql->fetch_assoc()){
-				echo "<option value='".$row['description']."'>" . $row['description'] . "</option>";
-			}
-		?>
-		  </select>
-		  
-		  <br></br>
-		  
-		  <h1>Select User</h1>
-		  <h3>Assign a user to a task</h3>
-		  <select id="user" name="user">
-		<?php 
-			$conn = new mysqli("localhost", "proj_user", "my*password", "lrobinson");
-			$sql = mysqli_query($conn, "SELECT first_name FROM profile where type='tutor'");
-				while ($row = $sql->fetch_assoc()){
-				echo "<option value='".$row['first_name']."'>" . $row['first_name'] . "</option>";
-			}
-		?>
-			</select>
-			
-			<br></br>
-			
-			<h1><b>Task Deadline</b> </h1>
-			 <input id="datepicker" name="deadline"/>
-		  
-		  <h1><b>Task Description</b></h1>
-		  <h3>Select a description that best fits task</h3>
-		  <select id="description" name="description"> 
-			<option value="Light PHP Tutoring">Light PHP Tutoring</option>
-			<option value="Heavy PHP Tutoring">Heavy PHP Tutoring</option>
-			<option value="Light SQL Tutoring">Light SQL Tutoring</option>
-			<option value="Heavy SQL Tutoring">Heavy SQL Tutoring</option>
-			<option value="Light C++ Tutoring">Light C++ Tutoring</option>
-			<option value="Heavy C++ Tutoring">Heavy C++ Tutoring</option>
-			<option value="Light Java Tutoring">Light Java Tutoring</option>
-			<option value="Heavy Java Tutoring">Heavy Java Tutoring</option>
-			<option value="Light Computer Tutoring">Light Computer Repair</option>
-			<option value="Heavy Computer Tutoring">Heavy Computer Repair</option>
-		  </select>
-	  <br>
-	  <input type="submit" value="Submit" onclick="taskcreated.php">
-	  </div>
-	</form>
-	</div>
-	</div>
+<body>
+  <?php
+  	$service = $_POST["service"];
+    $user = $_POST["user"];
+	$description = $_POST["description"];
+	$deadline = $_POST["deadline"];
+    $msg = ("Thank you. The selected user will complete the task by " . $deadline);
+    $conn = mysqli_connect("localhost", "proj_user",
+       "my*password", "lrobinson");
+	   
+	   echo $msg;
+
+  $data = mysqli_prepare($conn,
+    "INSERT INTO task(service, user, description, deadline) VALUES (?, ?, ?, ?);");
+		
+		mysqli_stmt_bind_param ($data, 'ssss', $service, $user, $description, $deadline);
+		
+		mysqli_stmt_execute($data)
+       or die("Error. Couldn't insert into the table." 
+				. mysqli_error($conn));
+ 
+  ?>
 </body>
 </html>

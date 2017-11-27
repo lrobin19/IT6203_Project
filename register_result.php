@@ -24,14 +24,17 @@ session_start();
 	  <nav>
 		<ul>
 		  <li class="">
-			<a href="index.php" title="register"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Home</span></a>
 			<?php
-			if (!isset ($_SESSION["uid"])){
-				echo '<a href="register.php" title="register"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Register</span></a>';
-			}
 			if (isset ($_SESSION["pupdate"]) && $_SESSION["pupdate"]){
-				echo '<a href="logout.php" title="register"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Logout</span></a>';
+			  $ptype = $_POST["ptype"];
+			  if($ptype == 'tutor'){
+				$_SESSION['pmenu']='tutor';
+			  }else{
+				$_SESSION['pmenu']='student';
+			  }
 			}
+			  $_SESSION['pmenu']='student';
+			  include "aside.php"; 
 			?>
 		  </li>
 		</ul>
@@ -51,12 +54,18 @@ session_start();
   $msg1="";
   if(!empty($_POST["ksuid"]) && !empty($_POST["fname"]) && !empty($_POST["lname"]) && !empty($_POST["email"]) && !empty($_POST['uname']) && !empty($_POST['pword1']) && !empty($_POST['ptype'])){
 	$ksuid = $_POST["ksuid"];
+	$_SESSION["ksuid"] = $ksuid;
 	$fname = $_POST["fname"];
+	$_SESSION["fname"] = $fname;
 	$lname = $_POST["lname"];
+	$_SESSION["lname"] = $lname;
 	$email = $_POST["email"];
+	$_SESSION["email"] = $email;
 	$uname = $_POST["uname"];
+	$_SESSION["uname"] = $uname;
 	$password = $_POST["pword1"];
 	$ptype = $_POST["ptype"];
+	$_SESSION["ptype"] = $ptype;
 	$to = $email;
 	$subject = "Registration";
 	$notification = $_POST['sendemail'];
@@ -126,13 +135,10 @@ session_start();
 		}
 		if ($ptype == 'tutor'){
 		  $query3 = mysqli_prepare($conn, "update profile set availability=? where username=?;");
-		  mysqli_stmt_bind_param ($query3, "ss", $availability, $_SESSION["username"]);
+		  mysqli_stmt_bind_param ($query3, "ss", $shift, $_SESSION["username"]);
 		  mysqli_stmt_execute($query3);
 		  mysqli_stmt_store_result($query3);
 		  $servshort = explode(',', $service);
-		  $query4 = mysqli_prepare($conn, "delete FROM servicesProvided where userid= ?");
-		  mysqli_stmt_bind_param ($query4, "i", $_SESSION['ksuid']);
-		  mysqli_stmt_execute($query4);
 		  foreach($servshort as $sid){
 			$query5 = mysqli_prepare($conn, "SELECT servID FROM services where shortdesc= ?");
 			mysqli_stmt_bind_param ($query5, "s", $sid);
@@ -191,11 +197,11 @@ session_start();
 		$msg = $msg . "<b>Username:</b> " . $uname . "<br>";
 		echo $msg;
 	  }elseif (isset ($_SESSION["pupdate"]) && $_SESSION["pupdate"]){
-		$query6 = mysqli_prepare($conn, "update profile set ksuid=?, first_name=?, last_name=?, email=?, post_date=?, notification=?, username=?, type=? where id=?");
+		$query6 = mysqli_prepare($conn, "update profile set ksuid=?, first_name=?, last_name=?, email=?, post_date=?, notification=?, username=?, type=? where ksuid=?");
 		if ( !$query6 ) {
 		  die('mysqli error: '.mysqli_error($conn));
 		}
-		mysqli_stmt_bind_param ($query6, "issssissi", $ksuid, $fname,$lname,$email, $timestamp, $notification, $uname, $ptype, $_SESSION['uid']);
+		mysqli_stmt_bind_param ($query6, "issssissi", $ksuid, $fname,$lname,$email, $timestamp, $notification, $uname, $ptype, $_SESSION['ksuid']);
 		mysqli_stmt_execute($query6);
 		mysqli_stmt_store_result($query6);
 		if ($addserv != ''){
@@ -207,7 +213,7 @@ session_start();
 		}
 		if ($ptype == 'tutor'){
 		  $query8 = mysqli_prepare($conn, "update profile set availability=? where username=?;");
-		  mysqli_stmt_bind_param ($query8, "ss", $availability, $_SESSION["username"]);
+		  mysqli_stmt_bind_param ($query8, "ss", $shift, $_SESSION["username"]);
 		  mysqli_stmt_execute($query8);
 		  mysqli_stmt_store_result($query8);
 		  $servshort = explode(',', $service);

@@ -1,9 +1,6 @@
 <?php
 session_start();
-if (!isset($_SESSION['authenticated']) OR !$_SESSION['authenticated'] == 1) {
-    header("Location: verify.php");
-die();
-}
+$_SESSION["errmsg"]='';
 ?>
 <!DOCTYPE html>
 <html lang="en-us">
@@ -15,6 +12,7 @@ die();
 	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="http://www.google.com/jsapi" type="text/javascript"></script>
   
   <script>
   $(document).ready(function() {
@@ -108,7 +106,7 @@ die();
 		<ul>
 		  <li class="">
 			<?php
-			  $_SESSION['pmenu']='student';
+			  $_SESSION['pmenu']='tutor';
 			  include "aside.php"; 
 			?>
 		  </li>
@@ -119,74 +117,93 @@ die();
 	  <div id="ribbon">
 		<ol class="breadcrumb">
 		  <li>Home</li>
-		  <li>Register</li>
+		  <li>Tutor</li>
 		</ol>
 	  </div>
 	  <br><br>
 	  <div class="center">
-<form action="taskcreated.php" method="post">
+	<form action="taskchange.php" method="post">
 	      
-		  <h1><b>KSUID</b></h1>
-		  <h3>Choose the KSUID of the requesting user</h3>
-		  <select id="ksu" name="ksu"> 
+		  <h1><b>Welcome!</b></h1>
+		  <h3>Transfer Tasks</h3>
+		  <select id="task" name="task"> 
 		<?php 
 			$conn = new mysqli("localhost", "proj_user", "my*password", "lrobinson");
-			$sql = mysqli_query($conn, "SELECT ksuid FROM profile where type='student'");
+			$sql = mysqli_query($conn, "SELECT taskid FROM task");
 				while ($row = $sql->fetch_assoc()){
-				echo "<option value='". $row['ksuid'] ."'>" . $row['ksuid'] . "</option>";
-			}
-		?>
-		  </select>
-		  
-		  <h1><b>Select Service</b></h1>
-		  <h3>Choose the service required</h3>
-		  <select id="service" name="service"> 
-		<?php 
-			$conn = new mysqli("localhost", "proj_user", "my*password", "lrobinson");
-			$sql = mysqli_query($conn, "SELECT description FROM services");
-				while ($row = $sql->fetch_assoc()){
-				echo "<option value='".$row['description']."'>" . $row['description'] . "</option>";
+				echo "<option value='". $row['taskid'] . "'>" . $row['taskid'] . "</option>";
 			}
 		?>
 		  </select>
 		  
 		  <br></br>
 		  
-		  <h1>Select User</h1>
-		  <h3>Assign a user to a task</h3>
-		  <select id="user" name="user">
+		  <h3>Select new user for task</h3>
+		  <select id="username" name="username">
 		<?php 
 			$conn = new mysqli("localhost", "proj_user", "my*password", "lrobinson");
-			$sql = mysqli_query($conn, "SELECT first_name FROM profile where type='tutor'");
+			$sql = mysqli_query($conn, "SELECT username FROM profile where type='tutor'");
 				while ($row = $sql->fetch_assoc()){
-				echo "<option value='".$row['first_name']."'>" . $row['first_name'] . "</option>";
+				echo "<option value='". $row['username'] . "'>" . $row['username'] . "</option>";
 			}
 		?>
 			</select>
 			
 			<br></br>
+			<input type="submit" value="Submit">
+			</form>
 			
-			<h1><b>Task Deadline</b> </h1>
-			 <input id="datepicker" name="deadline"/>
+			<form action="taskcompleted.php" method="post">
+			
+			<h1><b>Completed Tasks</b></h1>
+			<h3>Select task that has been completed.</h3>
+			 <select id="task" name="task"/>
+			 <?php 
+			$conn = new mysqli("localhost", "proj_user", "my*password", "lrobinson");
+			$sql = mysqli_query($conn, "SELECT taskid FROM task");
+				while ($row = $sql->fetch_assoc()){
+				echo "<option value='". $row['taskid'] . "'>" . $row['taskid'] . "</option>";
+			}
+		?>
+		</select>
 		  
-		  <h1><b>Task Description</b></h1>
-		  <h3>Select a description that best fits task</h3>
-		  <select id="description" name="description"> 
-			<option value="Light PHP Tutoring">Light PHP Tutoring</option>
-			<option value="Heavy PHP Tutoring">Heavy PHP Tutoring</option>
-			<option value="Light SQL Tutoring">Light SQL Tutoring</option>
-			<option value="Heavy SQL Tutoring">Heavy SQL Tutoring</option>
-			<option value="Light C++ Tutoring">Light C++ Tutoring</option>
-			<option value="Heavy C++ Tutoring">Heavy C++ Tutoring</option>
-			<option value="Light Java Tutoring">Light Java Tutoring</option>
-			<option value="Heavy Java Tutoring">Heavy Java Tutoring</option>
-			<option value="Light Computer Tutoring">Light Computer Repair</option>
-			<option value="Heavy Computer Tutoring">Heavy Computer Repair</option>
-		  </select>
-	  <br>
-	  <input type="submit" value="Submit" onclick="taskcreated.php">
+		  <br><br>
+		  <input type="submit" value="Submit">
+		  </form>
+		  
+		  <h1><b>View Tasks</b></h1>
+		  <?php
+		   $conn = mysqli_connect("localhost", "proj_user", "my*password", "lrobinson")
+        or die("Cannot connect to database:") .
+           mysqli_connect_error($conn);
+   
+		$sql = "SELECT * FROM task";
+		$result = $conn->query($sql);
+
+		if ($result->num_rows > 0) {
+            echo "<div align='center'><table border='2' height='100'><tr><th>TaskID</th><th>KSUID</th><th>Service</th>
+					<th>User</th><th>Description</th><th>Deadline</th></tr>";
+ 
+            while($row = $result->fetch_assoc()) {
+                
+			echo "<tr><td>";
+			echo $row['taskID'];
+			echo "</td><td>";
+			echo $row["ksuid"];
+			echo "</td><td>"; 
+			echo $row["service"];
+			echo "</td><td>"; 
+			echo $row["user"];
+			echo "</td><td>";   
+			echo $row["description"];
+			echo "</td><td>"; 
+			echo $row["deadline"];
+			echo "</td></tr>";  
+            }
+            echo "</table></div>";
+		}
+	 ?>
 	  </div>
-	</form>
 	</div>
 	</div>
 </body>
