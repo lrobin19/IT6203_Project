@@ -1,0 +1,4 @@
+.ui-jqgrid tr.ui-row-ltr td {
+    border-right-style: none;
+    border-left-style: none;
+}
